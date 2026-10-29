@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--HEAD-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EVERWOLD · A pixel MMORPG in development</title>
+<meta name="description" content="You wash ashore with nothing. EVERWOLD is a player-driven pixel MMORPG in development: your weapon becomes your class, players make the economy, and the community decides what comes next.">
+<meta name="theme-color" content="#060b09">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EVERWOLD">
+<meta property="og:title" content="EVERWOLD · A pixel MMORPG in development">
+<meta property="og:description" content="You wash ashore with nothing. Everything else, you earn. Join the campfire on Discord.">
+<meta property="og:url" content="https://everwold.github.io/">
+<meta property="og:image" content="https://everwold.github.io/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="EVERWOLD">
+<link rel="preload" href="assets/fonts/MarcellusSC-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<!--/HEAD-->
+<style>
+  /* The game's own title look: EVERWOLD in Marcellus SC, a gold rule with a diamond, Alegreya Sans for reading.
+     Pixel art lives only in the footage. Motion is scroll-linked CSS where the browser supports it, and loops play only while on screen. */
+  /*FONTS*/
+  @font-face { font-family: "Marcellus SC"; src: url("assets/fonts/MarcellusSC-Regular.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/AlegreyaSans-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/AlegreyaSans-Italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/AlegreyaSans-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/AlegreyaSans-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  /*/FONTS*/
+  :root {
+    --night: #060b09;     /* page */
+    --forest: #0b130f;    /* UI v5 forest */
+    --line: rgba(207, 168, 96, .2);
+    --line-hi: rgba(207, 168, 96, .45);
+    --gold: #cfa860; --gold-hi: #f0d38e;
+    --parch: #f0e6cd; --body: #e3d8bb; --sage: #c2bca4; --sage-dim: #8f8d7a;
+    --live: #86c46a; --soon: #e8a948;
+    --serif: "Marcellus SC", "Cormorant SC", Georgia, serif;
+    --sans: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--night); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--night); color: var(--body); font: 400 18px/1.6 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  a { color: inherit; }
+  img, video { display: block; max-width: 100%; }
+  .px { image-rendering: pixelated; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+  section { padding-block: clamp(84px, 11vw, 140px); }
+
+  /* the diamond from the title screen, used for every marker */
+  .dia { display: inline-block; flex: none; width: 9px; height: 9px; transform: rotate(45deg); background: var(--forest); border: 1px solid var(--gold-hi); box-shadow: 0 0 10px rgba(240, 211, 142, .55); }
+
+  /* buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 26px; border: 0; border-radius: 999px; cursor: pointer; text-decoration: none; white-space: nowrap;
+    font: 700 16px/1 var(--sans); letter-spacing: .02em; color: #1b1407; background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+    box-shadow: 0 10px 34px rgba(207, 168, 96, .22), inset 0 1px 0 rgba(255, 255, 255, .55); -webkit-tap-highlight-color: transparent; transition: transform .15s, box-shadow .15s; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(207, 168, 96, .32), inset 0 1px 0 rgba(255, 255, 255, .55); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible, a:focus-visible, summary:focus-visible, button:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+  .btn svg { width: 19px; height: 19px; flex: none; }
+  .btn.ghost { color: var(--parch); background: rgba(240, 230, 205, .07); box-shadow: inset 0 0 0 1px var(--line-hi); }
+  .btn.small { padding: 11px 18px; font-size: 14px; }
+
+  /* nav */
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--night); }
+  .nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: rgba(6, 11, 9, .6); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); border-bottom: 1px solid rgba(207, 168, 96, .12); }
+  .nav .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .mark { margin-right: auto; font: 19px/1 var(--serif); letter-spacing: .22em; color: var(--parch); text-decoration: none; }
+  .nav nav { display: flex; gap: 26px; }
+  .nav nav a { font-size: 15px; letter-spacing: .04em; color: var(--sage); text-decoration: none; }
+  .nav nav a:hover { color: var(--parch); }
+
+  /* hero */
+  .hero { position: relative; isolation: isolate; overflow: hidden; display: grid; align-items: center; min-height: 100vh; min-height: 100svh; margin-top: -65px; }
+  .hero-media { position: absolute; inset: 0; z-index: -2; }
+  .hero-media video { width: 100%; height: 100%; object-fit: cover; object-position: 45% 40%; }
+  @media (min-width: 821px) { .hero-media video { position: absolute; top: 0; left: 4%; width: 135%; max-width: none; } }
+  .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background:
+      radial-gradient(60% 50% at 78% 40%, rgba(255, 170, 80, .1), transparent 70%),
+      linear-gradient(90deg, rgba(6, 11, 9, .97) 0%, rgba(6, 11, 9, .88) 32%, rgba(6, 11, 9, .45) 62%, rgba(6, 11, 9, .35) 100%),
+      linear-gradient(0deg, var(--night) 0%, rgba(6, 11, 9, 0) 38%),
+      linear-gradient(180deg, rgba(6, 11, 9, .7), rgba(6, 11, 9, 0) 22%); }
+  .hero .wrap { width: 100%; padding-block: 128px 120px; }
+  .eyebrow { display: flex; align-items: center; gap: 14px; margin: 0; font: 14px/1.3 var(--serif); letter-spacing: .2em; color: var(--gold); text-transform: uppercase; }
+  h1.logo { margin: 26px -.2em 0 0; font: 400 clamp(46px, 13vw, 136px)/1 var(--serif); letter-spacing: .2em; color: var(--parch); text-shadow: 0 2px 24px rgba(0, 0, 0, .85), 0 0 40px rgba(240, 211, 142, .08); }
+  .rule { position: relative; width: min(620px, 100%); height: 14px; margin-top: clamp(16px, 2vw, 24px); }
+  .rule::before { content: ""; position: absolute; left: 0; right: 0; top: 6px; height: 1px; background: linear-gradient(90deg, var(--gold), rgba(207, 168, 96, .5) 50%, rgba(207, 168, 96, 0)); }
+  .rule .dia { position: absolute; left: 1px; top: 2px; }
+  .act { margin: 16px 0 0; font: 16px/1 var(--serif); letter-spacing: .12em; color: var(--gold); }
+  .pitch { margin: clamp(28px, 4vw, 40px) 0 0; max-width: 28ch; font: 500 clamp(22px, 2.6vw, 30px)/1.35 var(--sans); color: var(--parch); text-wrap: balance; }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+  .proof { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin: 26px 0 0; font-size: 15px; color: var(--sage); }
+  .proof .dia { width: 6px; height: 6px; box-shadow: none; border-color: var(--gold); }
+  .cue { position: absolute; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: grid; justify-items: center; gap: 10px; font: 12px/1 var(--serif); letter-spacing: .3em; color: var(--sage-dim); text-decoration: none; }
+  .cue i { width: 1px; height: 44px; background: linear-gradient(var(--gold), transparent); transform-origin: top; animation: drip 2.4s ease-in-out infinite; }
+  @keyframes drip { 0% { transform: scaleY(0); opacity: 1; } 60% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+
+  /* headings */
+  .kicker { display: flex; align-items: center; gap: 14px; margin: 0; font: 14px/1.3 var(--serif); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+  h2 { margin: 20px 0 0; font: 400 clamp(36px, 5.6vw, 70px)/1.06 var(--serif); color: var(--parch); text-wrap: balance; }
+  .intro { margin: 22px 0 0; max-width: 56ch; font-size: clamp(18px, 1.6vw, 20px); color: var(--sage); }
+  .intro b { color: var(--body); font-weight: 500; }
+
+  /* status chips: what is real today */
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px 6px; border-radius: 999px; font: 700 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+  .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
+  .chip.live { color: var(--live); background: rgba(134, 196, 106, .1); box-shadow: inset 0 0 0 1px rgba(134, 196, 106, .35); }
+  .chip.soon { color: var(--soon); background: rgba(232, 169, 72, .1); box-shadow: inset 0 0 0 1px rgba(232, 169, 72, .35); }
+  .chip.later { color: var(--sage-dim); background: rgba(143, 141, 122, .1); box-shadow: inset 0 0 0 1px rgba(143, 141, 122, .35); }
+
+  /* manifesto */
+  .manifesto { padding-block: clamp(90px, 13vw, 170px); }
+  .manifesto p { margin: 0 auto; max-width: 24ch; font: 400 clamp(30px, 5vw, 62px)/1.2 var(--serif); color: var(--parch); text-align: center; text-wrap: balance; }
+  .manifesto em { font-style: normal; color: var(--gold-hi); }
+
+  /* trailer */
+  .watch .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: clamp(36px, 7vw, 100px); align-items: center; }
+  .device { position: relative; overflow: hidden; border-radius: 24px; background: #000; box-shadow: 0 0 0 1px var(--line-hi), 0 0 90px rgba(207, 168, 96, .1); }
+  .device video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; }
+  .device button { position: absolute; inset: 0; display: grid; place-items: center; border: 0; padding: 0; cursor: pointer; background: linear-gradient(rgba(0, 0, 0, .1), rgba(0, 0, 0, .45)); }
+  .play { width: 84px; height: 84px; display: grid; place-items: center; border-radius: 50%; background: rgba(240, 230, 205, .14); box-shadow: inset 0 0 0 1px rgba(240, 211, 142, .65), 0 0 50px rgba(240, 211, 142, .25); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .play svg { width: 28px; height: 28px; margin-left: 5px; fill: var(--parch); }
+  .checks { list-style: none; margin: 30px 0 0; padding: 0; display: grid; gap: 14px; }
+  .checks li { display: flex; align-items: baseline; gap: 14px; color: var(--body); }
+  .checks .dia { transform: translateY(-2px) rotate(45deg); }
+
+  /* vision bento */
+  .bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 56px; }
+  .pillar { position: relative; isolation: isolate; overflow: hidden; min-height: 400px; padding: 30px; border-radius: 22px; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; background: var(--forest); box-shadow: inset 0 0 0 1px var(--line); }
+  .pillar.wide { grid-column: span 2; }
+  .pillar > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; opacity: .6; }
+  .pillar::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(6, 11, 9, .2) 0%, rgba(6, 11, 9, .7) 50%, rgba(6, 11, 9, .97) 100%); }
+  .pillar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line); pointer-events: none; }
+  .pillar .top { position: absolute; top: 26px; left: 30px; right: 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .pillar .label { font: 14px/1 var(--serif); letter-spacing: .2em; color: var(--gold); text-transform: uppercase; }
+  .pillar h3 { margin: 0; font: 400 clamp(28px, 3vw, 42px)/1.08 var(--serif); color: var(--parch); text-wrap: balance; }
+  .pillar p { margin: 0; max-width: 44ch; color: var(--body); }
+  .sigils { display: flex; gap: 8px; margin-bottom: 4px; }
+  .sigils img { width: 48px; height: 48px; padding: 8px; box-sizing: content-box; border-radius: 50%; background: rgba(6, 11, 9, .7); box-shadow: inset 0 0 0 1px var(--line-hi); }
+
+  /* in the build */
+  .feats { margin-top: 64px; }
+  .feat { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 76px); align-items: center; }
+  .feat + .feat { margin-top: clamp(72px, 9vw, 124px); }
+  .feat:nth-child(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+  .feat:nth-child(even) .shot { order: 2; }
+  .shot { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border-radius: 18px; background: var(--forest); box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(0, 0, 0, .55); }
+  .shot img, .shot video { width: 100%; height: 100%; object-fit: cover; }
+  .shot .rec { position: absolute; left: 14px; bottom: 14px; padding: 7px 11px 6px; border-radius: 999px; font: 700 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--parch); background: rgba(6, 11, 9, .7); box-shadow: inset 0 0 0 1px var(--line); }
+  .feat h3 { margin: 16px 0 0; font: 400 clamp(28px, 3.4vw, 44px)/1.1 var(--serif); color: var(--parch); text-wrap: balance; }
+  .feat p { margin: 16px 0 0; max-width: 46ch; color: var(--sage); }
+  .facts { list-style: none; display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 22px 0 0; padding: 0; font-size: 15px; color: var(--body); }
+  .facts li { display: flex; align-items: center; gap: 10px; }
+  .facts .dia { width: 6px; height: 6px; box-shadow: none; border-color: var(--gold); }
+  .stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: clamp(84px, 10vw, 132px); border-block: 1px solid var(--line); }
+  .stats div { padding: 30px 10px; text-align: center; }
+  .stats div + div { border-left: 1px solid var(--line); }
+  .stats b { display: block; font: 400 clamp(36px, 4.6vw, 58px)/1 var(--serif); color: var(--gold-hi); }
+  .stats span { display: block; margin-top: 10px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-dim); }
+
+  /* classes */
+  .classes { background: radial-gradient(80% 60% at 50% 0%, rgba(207, 168, 96, .06), transparent 70%); }
+  .head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
+  .arms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 56px; }
+  .arm .paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0 24px; }
+  .arm { padding: 30px 28px 32px; border-radius: 20px; background: linear-gradient(180deg, rgba(240, 230, 205, .05), rgba(240, 230, 205, .012)); box-shadow: inset 0 0 0 1px var(--line); }
+  .arm h3 { margin: 0; font: 400 28px/1.1 var(--serif); color: var(--parch); }
+  .arm .w { margin: 6px 0 0; font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--sage-dim); }
+  .path { display: flex; gap: 16px; align-items: center; margin-top: 24px; }
+  .path .medal { display: grid; }
+  .medal { flex: none; width: 76px; height: 76px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 50% 35%, #18261e, #070e0a 72%); box-shadow: inset 0 0 0 1px var(--line-hi), 0 0 30px rgba(207, 168, 96, .07); }
+  .medal img { width: 64px; height: 64px; }
+  .medal .dia { width: 12px; height: 12px; border-color: var(--soon); box-shadow: 0 0 14px rgba(232, 169, 72, .5); }
+  .path b { display: block; font: 400 21px/1.15 var(--serif); color: var(--gold-hi); }
+  .path span { display: block; font-size: 15px; line-height: 1.4; color: var(--sage); }
+  .path i { display: block; margin-top: 6px; font: normal 700 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--soon); }
+
+  /* roadmap */
+  .road { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 76px; position: relative; }
+  .road::before { content: ""; position: absolute; left: 0; right: 0; top: -30px; height: 1px; background: linear-gradient(90deg, var(--live), var(--soon) 50%, rgba(143, 141, 122, .5) 85%, transparent); }
+  .stage { position: relative; padding: 28px 26px 30px; border-radius: 20px; background: rgba(240, 230, 205, .022); box-shadow: inset 0 0 0 1px var(--line); }
+  .stage > .dia { position: absolute; left: 26px; top: -35px; width: 11px; height: 11px; }
+  .stage.now > .dia { border-color: var(--live); box-shadow: 0 0 14px rgba(134, 196, 106, .6); }
+  .stage.next > .dia { border-color: var(--soon); box-shadow: 0 0 14px rgba(232, 169, 72, .6); }
+  .stage.later > .dia { border-color: var(--sage-dim); box-shadow: none; }
+  .stage h3 { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 0 20px; font: 400 28px/1 var(--serif); color: var(--parch); }
+  .stage ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .stage li { position: relative; padding-left: 24px; line-height: 1.45; }
+  .stage li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 7px; height: 7px; transform: rotate(45deg); border: 1px solid var(--gold); }
+  .stage.now li::before { background: var(--live); border-color: var(--live); }
+  .stage.next li::before { border-color: var(--soon); }
+  .stage.later li { color: var(--sage-dim); }
+  .stage.later li::before { border-color: var(--sage-dim); }
+
+  /* community */
+  .camp { position: relative; isolation: isolate; overflow: hidden; padding-block: clamp(110px, 15vw, 180px); }
+  .camp-media { position: absolute; inset: 0; z-index: -2; }
+  .camp-media video { width: 100%; height: 100%; object-fit: cover; }
+  .camp::before { content: ""; position: absolute; inset: 0; z-index: -1; background:
+      linear-gradient(90deg, rgba(6, 11, 9, .96) 0%, rgba(6, 11, 9, .82) 45%, rgba(6, 11, 9, .4) 100%),
+      linear-gradient(0deg, var(--night), rgba(6, 11, 9, 0) 30%), linear-gradient(180deg, var(--night), rgba(6, 11, 9, 0) 30%); }
+  .steps { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 920px; margin: 48px 0 0; padding: 0; }
+  .steps li { padding: 24px 22px; border-radius: 18px; background: rgba(6, 11, 9, .62); box-shadow: inset 0 0 0 1px var(--line); }
+  .steps .n { display: block; font: 400 38px/1 var(--serif); color: var(--gold-hi); }
+  .steps b { display: block; margin-top: 14px; font: 400 21px/1.2 var(--serif); color: var(--parch); }
+  .steps span { display: block; margin-top: 8px; font-size: 16px; line-height: 1.45; color: var(--sage); }
+  .join { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; margin-top: 40px; }
+  .socials { display: flex; gap: 12px; }
+  .socials a { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; color: var(--parch); background: rgba(240, 230, 205, .06); box-shadow: inset 0 0 0 1px var(--line-hi); transition: background .15s; }
+  .socials a:hover { background: rgba(240, 230, 205, .14); }
+  .socials svg { width: 21px; height: 21px; }
+
+  /* faq */
+  .faq .wrap { max-width: 900px; }
+  .qa { margin-top: 44px; border-top: 1px solid var(--line); }
+  .qa details { border-bottom: 1px solid var(--line); }
+  .qa summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 24px 0; cursor: pointer; font: 400 clamp(20px, 2.2vw, 25px)/1.3 var(--serif); color: var(--parch); -webkit-tap-highlight-color: transparent; }
+  .qa summary::-webkit-details-marker { display: none; }
+  .qa summary::after { content: "+"; flex: none; font: 300 30px/1 var(--sans); color: var(--gold); transition: transform .2s; }
+  .qa details[open] summary::after { transform: rotate(45deg); }
+  .qa p { margin: -4px 0 26px; max-width: 62ch; color: var(--sage); }
+
+  footer { padding-block: 64px calc(44px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 28px; }
+  .foot .mark { font-size: 28px; }
+  .foot .rule { width: 260px; margin-top: 14px; }
+  .foot p { margin: 18px 0 0; font-size: 14px; color: var(--sage-dim); max-width: 52ch; }
+  .foot nav { display: flex; flex-wrap: wrap; gap: 12px 24px; font-size: 15px; }
+  .foot nav a { color: var(--sage); text-decoration: none; }
+  .foot nav a:hover { color: var(--parch); }
+
+  /* scroll-linked motion, only where the browser runs it off the main thread */
+  @supports (animation-timeline: view()) {
+    .hero .wrap { animation: lift linear both; animation-timeline: scroll(root); animation-range: 0 85vh; }
+    .hero-media { animation: zoom linear both; animation-timeline: scroll(root); animation-range: 0 100vh; }
+    .cue { animation: fade linear both; animation-timeline: scroll(root); animation-range: 0 25vh; }
+    .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% cover 26%; }
+    .shot.reveal { animation-name: settle; }
+    .word { animation: lit linear both; animation-timeline: view(); animation-range: cover 18% cover 42%; }
+    @keyframes lift { to { transform: translateY(-14vh); opacity: 0; } }
+    @keyframes zoom { to { transform: scale(1.12); } }
+    @keyframes fade { to { opacity: 0; } }
+    @keyframes rise { from { opacity: 0; transform: translateY(46px); } }
+    @keyframes settle { from { opacity: 0; transform: translateY(46px) scale(.95); } }
+    @keyframes lit { from { opacity: .16; } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero .wrap, .hero-media, .cue, .reveal, .word, .cue i { animation: none !important; }
+    .hero-media video, .camp-media video, .shot video { display: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  @media (max-width: 1024px) {
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stats div:nth-child(4) { border-left: 0; }
+    .stats div:nth-child(n+4) { border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 820px) {
+    .nav nav { display: none; }
+    .watch .wrap, .feat { grid-template-columns: minmax(0, 1fr); }
+    .feat:nth-child(even) { grid-template-columns: minmax(0, 1fr); }
+    .feat:nth-child(even) .shot { order: 0; }
+    .device { width: 100%; max-width: 330px; justify-self: center; }
+    .bento, .road, .steps { grid-template-columns: minmax(0, 1fr); }
+    .pillar.wide { grid-column: auto; }
+    .pillar { min-height: 360px; padding: 26px 22px; }
+    .pillar .top { left: 22px; right: 18px; top: 22px; }
+    .road { gap: 44px; margin-top: 56px; }
+    .road::before { display: none; }
+    .stage > .dia { top: -22px; }
+  }
+  @media (max-width: 560px) {
+    body { font-size: 17px; }
+    .hero { align-items: end; }
+    .hero .wrap { padding-block: 120px 96px; }
+    .hero::before { background:
+      radial-gradient(70% 40% at 70% 30%, rgba(255, 170, 80, .1), transparent 70%),
+      linear-gradient(0deg, var(--night) 0%, rgba(6, 11, 9, .92) 42%, rgba(6, 11, 9, .5) 75%, rgba(6, 11, 9, .7) 100%); }
+    .cta .btn { flex: 1 1 100%; }
+    .arms { grid-template-columns: minmax(0, 1fr); }
+    .stats b { font-size: 34px; }
+    .stats span { font-size: 11px; letter-spacing: .08em; }
+    .join .btn { flex: 1 1 100%; }
+    .foot { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="EVERWOLD, back to top">EVERWOLD</a>
+    <nav aria-label="Sections"><a href="#game">The game</a><a href="#classes">Classes</a><a href="#roadmap">Roadmap</a><a href="#community">Community</a><a href="#faq">FAQ</a></nav>
+    <a class="btn small" href="https://discord.gg/qeqydbnR4m" target="_blank" rel="noopener">Join Discord</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-label="EVERWOLD">
+    <div class="hero-media"><video src="assets/video/v1_ashore.mp4" poster="assets/img/v1_ashore.jpg" autoplay muted loop playsinline aria-hidden="true"></video></div>
+    <div class="wrap">
+      <p class="eyebrow"><span class="dia"></span>A pixel MMORPG · in development</p>
+      <h1 class="logo">EVERWOLD</h1>
+      <div class="rule"><span class="dia"></span></div>
+      <p class="act">Act I · The Strange Land</p>
+      <p class="pitch">You wash ashore with nothing. Every sword, every shirt, every coin, you earn.</p>
+      <div class="cta">
+        <a class="btn" href="https://discord.gg/qeqydbnR4m" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.5 19.5 0 0 0-4.9 1.5C.6 9.1-.3 13.6.2 18.1a19.8 19.8 0 0 0 6 3l1.3-2a12.8 12.8 0 0 1-2-1l.5-.4a14.1 14.1 0 0 0 12 0l.5.4a12.7 12.7 0 0 1-2 1l1.3 2a19.7 19.7 0 0 0 6-3c.5-5.2-.9-9.7-3.5-13.7ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Join the Discord</a>
+        <a class="btn ghost" href="#watch" data-watch><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>Watch the trailer</a>
+      </div>
+      <p class="proof"><span>Real gameplay</span><span class="dia"></span><span>A new update every week</span><span class="dia"></span><span>You vote what's next</span></p>
+    </div>
+    <a class="cue" href="#vision" aria-label="Scroll down">SCROLL<i></i></a>
+  </section>
+
+  <section class="manifesto" id="vision">
+    <div class="wrap">
+      <p data-words>An MMORPG where <em>your weapon becomes your class</em>, <em>players make the economy</em>, and <em>the community decides</em> what comes next.</p>
+    </div>
+  </section>
+
+  <section class="watch" id="watch">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="kicker"><span class="dia"></span>Trailer</p>
+        <h2>Thirty seconds.<br>Nothing staged.</h2>
+        <p class="intro">Every shot on this page comes straight from today's build. No renders, no mock-ups.</p>
+        <ul class="checks">
+          <li><span class="dia"></span>Wake on the shore, follow the smoke to Mara's camp</li>
+          <li><span class="dia"></span>Fell the first tree, craft the first sword</li>
+          <li><span class="dia"></span>Fight wolves, raiders and a dungeon boss</li>
+        </ul>
+      </div>
+      <div class="device reveal" id="trailer-box">
+        <video id="trailer" poster="assets/img/s_poster.jpg" playsinline preload="none" loop><source data-src="assets/video/trailer.mp4" type="video/mp4"></video>
+        <button id="play" type="button" aria-label="Play the 30 second trailer"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="vision">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="kicker"><span class="dia"></span>The MMORPG we're building</p>
+        <h2>Four promises.</h2>
+        <p class="intro">This is where EVERWOLD is going. <b>Each card says honestly what is playable today and what is still coming.</b></p>
+      </div>
+      <div class="bento">
+        <article class="pillar wide reveal">
+          <img src="assets/img/town_night.jpg" alt="" loading="lazy">
+          <div class="top"><span class="label">MMORPG</span><span class="chip soon">Coming</span></div>
+          <div class="sigils"><img class="px" src="assets/img/path_waechter.png" alt="Tank"><img class="px" src="assets/img/ic_herb.png" alt="Healer"><img class="px" src="assets/img/path_schlaechter.png" alt="Damage"></div>
+          <h3>One shared world.</h3>
+          <p>Group up as tank, healer and damage for dungeons. Trade, talk and gather around the same fires as everyone else.</p>
+        </article>
+        <article class="pillar reveal">
+          <img src="assets/img/v5_fight.jpg" alt="" loading="lazy">
+          <div class="top"><span class="label">Classes</span><span class="chip soon">Coming</span></div>
+          <h3>Your weapon becomes your class.</h3>
+          <p>Sword, spear and bow first, then magic. No class screen: you grow into one.</p>
+        </article>
+        <article class="pillar reveal">
+          <img src="assets/img/v4_craft.jpg" alt="" loading="lazy">
+          <div class="top"><span class="label">Player-driven</span><span class="chip live">Crafting live</span></div>
+          <h3>Players make the economy.</h3>
+          <p>Gear is gathered, refined and crafted by hand. Market stalls between players come next.</p>
+        </article>
+        <article class="pillar wide reveal">
+          <img src="assets/img/v2_camp.jpg" alt="" loading="lazy">
+          <div class="top"><span class="label">Community</span><span class="chip live">Live</span></div>
+          <h3>You decide what we build next.</h3>
+          <p>A new update every week. You play it, tell us what you think, and vote on the next one in Discord.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="build" id="game">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="head-row"><p class="kicker"><span class="dia"></span>In the build today</p><span class="chip live">Playable</span></div>
+        <h2>Chapter one is real.</h2>
+        <p class="intro">From the first step on the sand to the first dungeon boss.</p>
+      </div>
+      <div class="feats">
+        <div class="feat">
+          <div class="shot reveal"><img src="assets/img/wake.jpg" alt="The hero wakes up on the beach" loading="lazy"><span class="rec">Real gameplay</span></div>
+          <div class="reveal">
+            <p class="kicker"><span class="dia"></span>01 · Story</p>
+            <h3>Washed ashore.</h3>
+            <p>You wake on a strange beach in torn rags with an empty bag. The only lead is smoke above the trees.</p>
+            <ul class="facts"><li><span class="dia"></span>Story chapter 1</li><li><span class="dia"></span>Mara's camp</li><li><span class="dia"></span>Codex of everything you find</li></ul>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="shot reveal"><video class="loop" data-src="assets/video/v3_gather.mp4" poster="assets/img/v3_gather.jpg" muted loop playsinline preload="none" aria-hidden="true"></video><span class="rec">Real gameplay</span></div>
+          <div class="reveal">
+            <p class="kicker"><span class="dia"></span>02 · Gather &amp; craft</p>
+            <h3>Every sword was a tree first.</h3>
+            <p>Fell, mine, skin and pick. Refine at stations, craft your own gear, and wear what you make where everyone can see it.</p>
+            <ul class="facts"><li><span class="dia"></span>16 professions</li><li><span class="dia"></span>70 recipes</li><li><span class="dia"></span>Visible gear, rags to armor</li></ul>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="shot reveal"><img src="assets/img/v5_fight.jpg" alt="Sword fight with a grey wolf" loading="lazy"><span class="rec">Real gameplay</span></div>
+          <div class="reveal">
+            <p class="kicker"><span class="dia"></span>03 · Combat</p>
+            <h3>Fights that hit back.</h3>
+            <p>Read the wind-up, dodge, block or meet it with a perfect block. Combos and heavy blows land with weight.</p>
+            <ul class="facts"><li><span class="dia"></span>Sword, spear and bow</li><li><span class="dia"></span>Dodge by armor weight</li><li><span class="dia"></span>Perfect block</li></ul>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="shot reveal"><video class="loop" data-src="assets/video/v7_dungeon.mp4" poster="assets/img/v7_dungeon.jpg" muted loop playsinline preload="none" aria-hidden="true"></video><span class="rec">Real gameplay</span></div>
+          <div class="reveal">
+            <p class="kicker"><span class="dia"></span>04 · Beasts &amp; dungeons</p>
+            <h3>Something waits in the dark.</h3>
+            <p>Grey wolves, boars, raiders, thorn spirits and stranger things roam the first zone. Below it, three dungeons, each ending in a boss.</p>
+            <ul class="facts"><li><span class="dia"></span>13 enemy types</li><li><span class="dia"></span>3 dungeons</li><li><span class="dia"></span>Bosses with their own loot</li></ul>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="shot reveal"><img src="assets/img/town_night.jpg" alt="The town at night" loading="lazy"><span class="rec">Real gameplay</span></div>
+          <div class="reveal">
+            <p class="kicker"><span class="dia"></span>05 · Town</p>
+            <h3>A fire to come home to.</h3>
+            <p>Sell your haul, learn a trade from its trainer, take contracts from the board and store what you can't carry.</p>
+            <ul class="facts"><li><span class="dia"></span>Merchants and trainers</li><li><span class="dia"></span>Contract board</li><li><span class="dia"></span>Levels 1 to 15</li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="stats reveal">
+        <div><b>16</b><span>Professions</span></div>
+        <div><b>70</b><span>Recipes</span></div>
+        <div><b>124</b><span>Items</span></div>
+        <div><b>13</b><span>Enemy types</span></div>
+        <div><b>3</b><span>Dungeons</span></div>
+        <div><b>15</b><span>Levels</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="classes" id="classes">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="head-row"><p class="kicker"><span class="dia"></span>Classes</p><span class="chip soon">Coming</span></div>
+        <h2>Pick up a weapon.<br>Become a class.</h2>
+        <p class="intro">No class screen at the start. <b>You carry two weapons, and every hit you land grows that weapon's Scars.</b> Each weapon splits into two paths, each path into its own abilities.</p>
+      </div>
+      <div class="arms">
+        <article class="arm reveal">
+          <h3>Sword</h3><p class="w">Strength</p>
+          <div class="paths"><div class="path"><span class="medal"><img class="px" src="assets/img/path_waechter.png" alt=""></span><div><b>Warden</b><span>Block, counter, hold the line.</span><i>Tank</i></div></div>
+          <div class="path"><span class="medal"><img class="px" src="assets/img/path_schlaechter.png" alt=""></span><div><b>Butcher</b><span>Bleeding and executions.</span><i>Damage</i></div></div></div>
+        </article>
+        <article class="arm reveal">
+          <h3>Spear</h3><p class="w">Agility</p>
+          <div class="paths"><div class="path"><span class="medal"><img class="px" src="assets/img/path_brecher.png" alt=""></span><div><b>Breaker</b><span>Heft and stuns. The shaft is a weapon too.</span><i>Control</i></div></div>
+          <div class="path"><span class="medal"><img class="px" src="assets/img/path_taenzer.png" alt=""></span><div><b>Dancer</b><span>Dodge, reach, leaping thrust.</span><i>Damage</i></div></div></div>
+        </article>
+        <article class="arm reveal">
+          <h3>Bow</h3><p class="w">Agility</p>
+          <div class="paths"><div class="path"><span class="medal"><img class="px" src="assets/img/path_jaeger.png" alt=""></span><div><b>Hunter</b><span>Traps, freezing, slowing.</span><i>Control</i></div></div>
+          <div class="path"><span class="medal"><img class="px" src="assets/img/path_schuetze.png" alt=""></span><div><b>Marksman</b><span>Draw and critical hits.</span><i>Damage</i></div></div></div>
+        </article>
+        <article class="arm reveal">
+          <h3>Magic</h3><p class="w">Rare, found in the world</p>
+          <div class="paths"><div class="path"><span class="medal"><span class="dia"></span></span><div><b>Fire staff</b><span>Burn from range.</span><i>Damage</i></div></div>
+          <div class="path"><span class="medal"><span class="dia"></span></span><div><b>Life staff</b><span>Keep the group standing.</span><i>Healer</i></div></div>
+          <div class="path"><span class="medal"><span class="dia"></span></span><div><b>Frost gauntlet</b><span>Freeze and hold.</span><i>Control</i></div></div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="roadmap" id="roadmap">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="kicker"><span class="dia"></span>Roadmap</p>
+        <h2>What's live. What's next.</h2>
+        <p class="intro">Goals, not dates. <b>The community helps decide the order.</b></p>
+      </div>
+      <div class="road">
+        <div class="stage now reveal"><span class="dia"></span><h3>Now <span class="chip live">In the build</span></h3><ul>
+          <li>Story chapter 1: washed ashore</li><li>Gathering, crafting, 16 professions</li><li>Combat with sword, spear and bow</li>
+          <li>13 enemy types, 3 dungeons</li><li>Levels 1 to 15, visible gear</li><li>Town, merchants, contracts, codex</li></ul></div>
+        <div class="stage next reveal"><span class="dia"></span><h3>Next <span class="chip soon">Coming</span></h3><ul>
+          <li>Classes: six weapon paths</li><li>A shared world: play together</li><li>Group dungeons: tank, healer, damage</li>
+          <li>Player market and trading</li><li>Magic weapons</li><li>More story chapters</li></ul></div>
+        <div class="stage later reveal"><span class="dia"></span><h3>Later <span class="chip later">Planned</span></h3><ul>
+          <li>Races</li><li>Guilds and housing</li><li>Mounts</li><li>PvP and raids</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="camp" id="community">
+    <div class="camp-media"><video class="loop" data-src="assets/video/v2_camp.mp4" poster="assets/img/v2_camp.jpg" muted loop playsinline preload="none" aria-hidden="true"></video></div>
+    <div class="wrap">
+      <div class="reveal">
+        <p class="kicker"><span class="dia"></span>Community</p>
+        <h2>From the players,<br>for the players.</h2>
+        <p class="intro">EVERWOLD is built in the open, around one campfire. Pull up a log.</p>
+      </div>
+      <ol class="steps">
+        <li class="reveal"><span class="n">I</span><b>A new update every week.</b><span>Small, playable and real.</span></li>
+        <li class="reveal"><span class="n">II</span><b>You play it.</b><span>Tell us what feels great and what doesn't.</span></li>
+        <li class="reveal"><span class="n">III</span><b>You vote what's next.</b><span>The community picks the next update.</span></li>
+      </ol>
+      <div class="join reveal">
+        <a class="btn" href="https://discord.gg/qeqydbnR4m" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.5 19.5 0 0 0-4.9 1.5C.6 9.1-.3 13.6.2 18.1a19.8 19.8 0 0 0 6 3l1.3-2a12.8 12.8 0 0 1-2-1l.5-.4a14.1 14.1 0 0 0 12 0l.5.4a12.7 12.7 0 0 1-2 1l1.3 2a19.7 19.7 0 0 0 6-3c.5-5.2-.9-9.7-3.5-13.7ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Join the Discord</a>
+        <div class="socials">
+          <a href="https://www.youtube.com/@everwoldgame" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.2 3.6-6.2 3.6Z"/></svg></a>
+          <a href="https://www.tiktok.com/@everwold" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.7a4.8 4.8 0 0 1-3.8-4.2V2h-3.4v13.6a2.9 2.9 0 1 1-2-2.8V9.3a6.3 6.3 0 1 0 5.4 6.3V8.7a8.2 8.2 0 0 0 4.8 1.5V6.8l-1-.1Z"/></svg></a>
+          <a href="https://www.instagram.com/everwoldgame/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq" id="faq">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="kicker"><span class="dia"></span>Questions</p>
+        <h2>Before you ask.</h2>
+      </div>
+      <div class="qa reveal">
+        <details><summary>When can I play?</summary><p>Not yet. EVERWOLD is in active development. Playtests are announced first in the Discord.</p></details>
+        <details><summary>Is it really an MMORPG?</summary><p>That's what we are building. Today the island is played alone; the shared world, group dungeons and trading between players are the next big steps. This page marks everything as live or coming.</p></details>
+        <details><summary>Will there be classes?</summary><p>Yes, and you won't pick them from a menu. Your weapon becomes your class: six paths across sword, spear and bow come first, magic after.</p></details>
+        <details><summary>Is the footage real?</summary><p>Yes. Every picture and clip here is recorded from the current build.</p></details>
+        <details><summary>How can I shape the game?</summary><p>Join the Discord. Every week there's a new update, and the community votes on what comes next.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <a class="mark" href="#top">EVERWOLD</a>
+      <div class="rule"><span class="dia"></span></div>
+      <p>EVERWOLD is in early development. All footage is real gameplay from the current build. © 2026 EVERWOLD</p>
+    </div>
+    <nav aria-label="Links"><a href="https://discord.gg/qeqydbnR4m" target="_blank" rel="noopener">Discord</a><a href="https://www.youtube.com/@everwoldgame" target="_blank" rel="noopener">YouTube</a><a href="https://www.tiktok.com/@everwold" target="_blank" rel="noopener">TikTok</a><a href="https://www.instagram.com/everwoldgame/" target="_blank" rel="noopener">Instagram</a></nav>
+  </div>
+</footer>
+
+<script>
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // The trailer loads only when someone asks for it.
+  const tv = document.getElementById('trailer'), tb = document.getElementById('play');
+  function playTrailer() {
+    const s = tv.querySelector('source');
+    if (!s.src) { s.src = s.dataset.src; tv.load(); }
+    tv.controls = true; tb.hidden = true; tv.muted = false;
+    tv.play().catch(() => { tv.muted = true; tv.play().catch(() => {}); });
+  }
+  tb.addEventListener('click', playTrailer);
+  document.querySelectorAll('[data-watch]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('trailer-box').scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
+    playTrailer();
+  }));
+
+  // Loops load when they come near the screen and play only while visible.
+  if ('IntersectionObserver' in window && !still) {
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
+    }), { rootMargin: '200px 0px' });
+    document.querySelectorAll('video.loop').forEach(v => io.observe(v));
+  }
+  if (still) document.querySelectorAll('video[autoplay]').forEach(v => v.pause());
+
+  // The manifesto lights up word by word as it scrolls past (only where scroll-linked CSS runs).
+  if (window.CSS && CSS.supports('animation-timeline: view()')) {
+    document.querySelectorAll('[data-words]').forEach(el => {
+      const walk = node => [...node.childNodes].forEach(n => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(part => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.append(part); return; }
+            const s = document.createElement('span'); s.className = 'word'; s.textContent = part; frag.append(s);
+          });
+          n.replaceWith(frag);
+        } else walk(n);
+      });
+      walk(el);
+    });
+  }
+</script>
+</body>
+</html>
